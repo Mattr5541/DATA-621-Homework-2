@@ -191,6 +191,7 @@ Specificity = function(df) {
   
   return((TN)/(TN+FP))
 }
+Specificity(df)
 ```
 
 ### 8. 
@@ -283,7 +284,36 @@ Note that I recommend using a sequence of thresholds ranging from 0 to 1 at 0.01
 intervals.
 
 ```{r}
+User_ROC = function(df) {
+  threshold = seq(0, 1, 0.01)
+  sensitivity = numeric(length(threshold))
+  specificity = numeric(length(threshold))
+  
+  for (i in seq_along(threshold)) {
+    threshold_index = threshold[i]
+    TP = sum(df$class == 1 & df$scored.probability >= threshold_index)
+    TN = sum(df$class == 0 & df$scored.probability >= threshold_index)
+    FP = sum(df$class == 0 & df$scored.probability < threshold_index)
+    FN = sum(df$class == 1 & df$scored.probability < threshold_index)
+    
+    sensitivity[i] <- (TP)/(TP+FN)
+    specificity[i] <- (TN)/(TN+FP)
+  }
+  
+  plot(1 - specificity, sensitivity, type = "l", col = "black", xlim = rev(c(0.0, 1.0)), xlab = "1 - Specificity", ylab = "Sensitivity")
+  #abline(min(1 - specificity), min(sensitivity), col = "black", lty = 2)
+  
+  
+  auc <- sum(diff(1 - specificity) * sensitivity)
+  cat("The AUC is: ", auc)
+  
+  auc_vec <- diff(1 - specificity) * sensitivity
 
+kable(auc_vec)
+  
+}
+
+User_ROC(df)
 ```
 
 ### 11.
@@ -398,8 +428,10 @@ How do the results compare with your own functions?
 
 ```{r}
 plot(roc(df$class, df$scored.probability), main="ROC Curve from pROC Package")
+
+auc(df$class, df$scored.probability)
 ```
 
-
+Compared to the user-defined functions we created, the ROC curve seems to have a similar, but different shape. For instance, the slope of both ROC curves appears to differ (perhaps this is due to differences in threshold values?). The AUC values are relatively consistent, however. 
 
 
