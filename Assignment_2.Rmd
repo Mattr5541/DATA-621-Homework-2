@@ -1,6 +1,6 @@
 ---
 title: "Assignment 2 - Data 621"
-author: "Coco Donovan"
+author: " Group 3: Coco Donovan, Matthew Roland, Marjete Vucinaj, Jean Jimenez"
 date: "`r Sys.Date()`"
 output:
   pdf_document: default
